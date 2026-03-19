@@ -1,4 +1,5 @@
 import { OSU_API_CLIENT_ID, OSU_API_CLIENT_SECRET } from "$env/static/private";
+import { measurementsTable } from "$lib/db/schema";
 import { createClient } from "@libsql/client/sqlite3";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
@@ -8,12 +9,6 @@ const dbclient = createClient({
 });
 
 const db = drizzle(dbclient);
-
-export const measurementsTable = sqliteTable("measurements", {
-    timestamp: int().primaryKey({ autoIncrement: false }),
-    stable: int(),
-    lazer: int(),
-});
 
 const client_id = parseInt(OSU_API_CLIENT_ID);
 const client_secret = OSU_API_CLIENT_SECRET;
