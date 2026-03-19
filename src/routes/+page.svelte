@@ -48,7 +48,6 @@
 
 <style>
     :global(*) {
-        font-family: 'Iosevka Nerd Font';
         box-sizing: border-box;
         text-align: center;
     }
