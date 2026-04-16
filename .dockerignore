@@ -1,0 +1,10 @@
+node_modules/
+.deno/
+.vite/
+.svelte-kit/
+build/
+dist/
+.git/
+.gitignore
+timeseries.db        # never bake the DB into the image
+*.log

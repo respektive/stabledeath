@@ -1,19 +1,21 @@
+import "./osu-api-timers-shim.server.ts";
+import * as osu from "osu-api-v2-js";
 import { OSU_API_CLIENT_ID, OSU_API_CLIENT_SECRET } from "$env/static/private";
-import { measurementsTable } from "$lib/db/schema";
-import { createClient } from "@libsql/client/sqlite3";
+import { measurementsTable } from "../db/schema.ts";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
-import { int, sqliteTable } from "drizzle-orm/sqlite-core";
-const dbclient = createClient({
-    url: "file:timeseries.db",
-});
 
-const db = drizzle(dbclient);
+let _db: ReturnType<typeof drizzle> | null = null;
+// Lazy initialization of the database
+function getDb() {
+    if (_db) return _db;
+    _db = drizzle({ connection: "file:/data/timeseries.db" });
+    return _db;
+}
 
 const client_id = parseInt(OSU_API_CLIENT_ID);
 const client_secret = OSU_API_CLIENT_SECRET;
 
-import * as osu from "osu-api-v2-js";
 const client = await osu.API.createAsync(client_id, client_secret);
 let latestData: typeof measurementsTable.$inferSelect | null = null;
 let latestCheck: number = 0;
@@ -66,21 +68,21 @@ export async function getChangelogDataApi(timestamp: number): Promise<{
     stable: number;
     lazer: number;
 } | null> {
-    let changelogs;
+    let changelogs: Array<{ name: string; user_count: number }> = [];
     try {
         changelogs = await client.getChangelogStreams();
     } catch {
         return null;
     }
     const stable =
-        (changelogs.find((i) => i.name == "stable40")?.user_count ?? 0) +
-        (changelogs.find((i) => i.name == "cuttingedge")?.user_count ?? 0);
+        (changelogs.find((i) => i.name === "stable40")?.user_count ?? 0) +
+        (changelogs.find((i) => i.name === "cuttingedge")?.user_count ?? 0);
 
     const lazer =
-        (changelogs.find((i) => i.name == "lazer")?.user_count ?? 0) +
-        (changelogs.find((i) => i.name == "tachyon")?.user_count ?? 0);
+        (changelogs.find((i) => i.name === "lazer")?.user_count ?? 0) +
+        (changelogs.find((i) => i.name === "tachyon")?.user_count ?? 0);
 
-    await db.insert(measurementsTable).values({
+    await getDb().insert(measurementsTable).values({
         timestamp: timestamp,
         stable: stable,
         lazer: lazer,
@@ -89,7 +91,7 @@ export async function getChangelogDataApi(timestamp: number): Promise<{
 }
 
 export async function getLazerAbsolutePeak() {
-    const result = await db
+    const result = await getDb()
         .select()
         .from(measurementsTable)
         .where(
@@ -101,7 +103,7 @@ export async function getLazerAbsolutePeak() {
 }
 
 export async function getLazerRelativePeak() {
-    const result = await db
+    const result = await getDb()
         .select()
         .from(measurementsTable)
         .where(
@@ -117,7 +119,7 @@ export async function getLazerRelativePeak() {
 }
 
 export async function getLazerPeakNearTopPercentage() {
-    const maxPercentageResult = await db
+    const maxPercentageResult = await getDb()
         .select({
             maxPercentage: sql<number>`MAX(CAST(${measurementsTable.lazer} AS REAL) / (${measurementsTable.stable} + ${measurementsTable.lazer}))`,
         })
@@ -128,11 +130,13 @@ export async function getLazerPeakNearTopPercentage() {
 
     const maxPercentage = maxPercentageResult[0].maxPercentage;
 
-    const result = await db
+    const result = await getDb()
         .select()
         .from(measurementsTable)
         .where(
-            sql`(CAST(${measurementsTable.lazer} AS REAL) / (${measurementsTable.stable} + ${measurementsTable.lazer})) >= ${maxPercentage - 0.015}`,
+            sql`(CAST(${measurementsTable.lazer} AS REAL) / (${measurementsTable.stable} + ${measurementsTable.lazer})) >= ${
+                maxPercentage - 0.015
+            }`,
         )
         .orderBy(sql`${measurementsTable.lazer} DESC`)
         .limit(1);
