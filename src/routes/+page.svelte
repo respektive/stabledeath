@@ -1,5 +1,6 @@
 <script lang="ts">
     import Bars from "$components/Bars.svelte";
+    import Footer from "$components/Footer.svelte";
 
     const { data } = $props();
 
@@ -69,6 +70,7 @@
                 </div>
             {/if}
         </div>
+        <Footer />
     </div>
 </div>
 
@@ -112,6 +114,7 @@
         align-items: center;
         width: 100vw;
         height: 100vh;
+        overflow-y: auto;
     }
 
     .contents {
@@ -140,8 +143,8 @@
     }
     @media (prefers-color-scheme: dark) {
         :root {
-            background-color: #0b0b0b;
-            color: white;
+            background-color: #191724;
+            color: #e0def4;
         }
     }
 </style>
