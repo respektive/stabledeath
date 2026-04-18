@@ -73,7 +73,7 @@
 </div>
 
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
     :global(*) {
         box-sizing: border-box;
         text-align: center;
@@ -81,7 +81,7 @@
 
     :root {
         overflow: hidden;
-        font-family: "Inter", sans-serif;
+        font-family: "Nunito Sans", sans-serif;
         font-optical-sizing: auto;
         font-style: normal;
         line-height: 1.5;
