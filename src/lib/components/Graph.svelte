@@ -148,10 +148,10 @@
 
 <style>
     div :global(.u-legend) {
-        color: light-dark(#e0def4, black);
+        color: light-dark(black, "#e0def4");
     }
     div :global(.u-title) {
-        color: light-dark(#e0def4, black);
+        color: light-dark(black, "#e0def4");
     }
     div :global(.u-wrap) {
         border: none;
