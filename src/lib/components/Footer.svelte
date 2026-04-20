@@ -1,5 +1,6 @@
 <script>
     import FooterLink from "./FooterLink.svelte";
+    import { env } from "$env/dynamic/public";
 </script>
 
 <footer class="footer">
@@ -8,6 +9,7 @@
     ></FooterLink>
     <FooterLink url="https://www.donationalerts.com/r/ch1ffaa" title="donations"
     ></FooterLink>
+    <span>version: {env.PUBLIC_VERSION}</span>
 </footer>
 
 <style>
