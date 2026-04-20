@@ -8,7 +8,9 @@ let _db: ReturnType<typeof drizzle> | null = null;
 // Lazy initialization of the database
 function getDb() {
     if (_db) return _db;
-    _db = drizzle({ connection: "file:/data/timeseries.db" });
+    _db = drizzle({
+        connection: env.DATABASE_FILE ?? "file:/data/timeseries.db",
+    });
     return _db;
 }
 
