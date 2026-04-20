@@ -3,7 +3,7 @@
 </script>
 
 <div>
-    <h2>Cool milestones for in-game additions</h2>
+    <h2>Cool milestones</h2>
     <div class="card-container">
         <Milestone date={1706562000000}>pp release</Milestone>
         <Milestone date={1721854800000}>Daily challenges</Milestone>

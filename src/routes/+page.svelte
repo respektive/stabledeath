@@ -14,6 +14,18 @@
     const peakNear = data.nearPeak;
     const userCount = data.userCountData;
     const userRatio = data.userRatioData;
+
+    const areWeYet = () => {
+        const { lazer, stable } = changelogs;
+        const ratio = Math.round(lazer / (stable + lazer)) * 10000.0;
+        if (ratio < 50.0) {
+            return "Not yet, but we're getting there";
+        }
+        if (ratio < 75.0) {
+            return "The majority is here, but some still remain";
+        }
+        return "we are officially lazer";
+    };
     // console.log(data.userCountData);
 </script>
 
@@ -42,8 +54,8 @@
 
 <div class="app">
     <div class="contents">
-        <h1>lazer vs stable user counts</h1>
-        <MilestoneList />
+        <h1 style="margin-bottom: 0">Are we lazer yet?</h1>
+        <h2 style="margin-top: 0">{areWeYet()}</h2>
         <div class="bars">
             {#if changelogs}
                 <BarBlock stable={changelogs.stable} lazer={changelogs.lazer}>
@@ -72,6 +84,8 @@
                 </BarBlock>
             {/if}
         </div>
+        <MilestoneList />
+        <h2>Historical statistics</h2>
         <Graph {userCount} {userRatio} />
         <Footer />
     </div>
