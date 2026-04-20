@@ -12,11 +12,11 @@
     ];
 
     const tba = [
-        "Real-time diffcalc",
-        "Results screen v2",
         "New score multipliers",
-        "OWC on lazer",
+        "Results screen v2",
         "Majority on lazer",
+        "Real-time diffcalc",
+        "OWC on lazer",
         "App store release",
         "Stable deprecated",
     ];
