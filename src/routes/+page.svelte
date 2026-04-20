@@ -3,6 +3,8 @@
     import Bars from "$components/Bars.svelte";
     import Footer from "$components/Footer.svelte";
     import Graph from "$components/Graph.svelte";
+    import Milestone from "$components/Milestone.svelte";
+    import MilestoneList from "$components/MilestoneList.svelte";
 
     const { data } = $props();
 
@@ -41,6 +43,7 @@
 <div class="app">
     <div class="contents">
         <h1>lazer vs stable user counts</h1>
+        <MilestoneList />
         <div class="bars">
             {#if changelogs}
                 <BarBlock stable={changelogs.stable} lazer={changelogs.lazer}>
