@@ -25,3 +25,7 @@ export function getPlayerCounts(array: ChangelogEntry[]): UserCounts {
         lazer: findLazer(array),
     };
 }
+export const timeout = (ms: number) =>
+    new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Changelog request timed out")), ms),
+    );
