@@ -4,14 +4,22 @@ import { measurementsTable } from "../db/schema.ts";
 import { desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 import { type ChangelogEntry, getPlayerCounts, timeout } from "$utils/data.ts";
+import { log, debug, warn, error } from "$utils/logs.ts";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 // Lazy initialization of the database
 function getDb() {
-    if (_db) return _db;
+    if (_db) {
+        log("Getting initialized database");
+        return _db;
+    }
+
+    log("Initializing database");
     _db = drizzle({
         connection: env.DATABASE_FILE ?? "file:/data/timeseries.db",
     });
+
+    log("Connection open");
     return _db;
 }
 
@@ -21,14 +29,17 @@ function getApiClient() {
     const clientSecret = env.OSU_API_CLIENT_SECRET;
 
     if (!Number.isFinite(clientId)) {
+        error("OSU_API_CLIENT_ID is not valid or missing");
         throw new Error("Missing OSU_API_CLIENT_ID");
     }
 
     if (!clientSecret) {
+        error("OSU_API_CLIENT_SECRET is not valid or missing");
         throw new Error("Missing OSU_API_CLIENT_SECRET");
     }
 
     apiClientPromise ??= osu.API.createAsync(clientId, clientSecret);
+    log("Creating lazy API client");
     return apiClientPromise;
 }
 
@@ -37,17 +48,19 @@ let latestCheck: number = 0;
 
 setInterval(async () => {
     if (!latestData || latestCheck < Date.now() - 300000) {
-        console.log("Triggered an update");
+        log("Triggered an update");
         latestCheck = Date.now();
         latestData = await getChangelogDataApi(latestCheck);
+        log("Fetched osu!api data", latestData);
         await Promise.all([
             updateLastDay(),
             updateLastDayRatio(),
             updateUserCountGraph(),
             updateUserRatioGraph(),
         ]);
+        log("Updated graph data");
     }
-    console.log("automatic update");
+    log("Automatic update");
 }, 150000);
 
 type ChangelogData = {
@@ -58,18 +71,19 @@ type ChangelogData = {
 
 export async function getChangelogData() {
     if (latestData && latestCheck > Date.now() - 300000) {
+        log("Updated recently, returning latest");
         return latestData;
     }
-    console.log("Triggered an update");
-    latestCheck = Date.now();
+    log("Triggered an update");
     let data: ChangelogData | null = null;
     try {
         data = await Promise.race<ChangelogData | null>([
             getChangelogDataApi(latestCheck),
             timeout(1000),
         ]);
+        log("Fetched osu!api changelog data");
     } catch (err) {
-        console.log(err);
+        error("Failed to fetch osu!api data", err);
         return latestData;
     }
     if (data !== null) {
@@ -86,18 +100,22 @@ export async function getChangelogDataApi(timestamp: number): Promise<{
     let changelogs: ChangelogEntry[] = [];
     try {
         const client = await getApiClient();
+        log("Got an API client");
         changelogs = await client.getChangelogStreams();
+        log("Got changelogs");
     } catch (err) {
-        console.log("Failed to fetch changelog data", err);
+        error("Failed to fetch changelog data", err);
         return null;
     }
     const { stable, lazer } = getPlayerCounts(changelogs);
+    log("Got playcounts", stable, lazer);
 
-    await getDb().insert(measurementsTable).values({
+    const result = await getDb().insert(measurementsTable).values({
         timestamp: timestamp,
         stable: stable,
         lazer: lazer,
     });
+    log("Inserted changelog entry", result);
     return { timestamp: timestamp, stable: stable, lazer: lazer };
 }
 
