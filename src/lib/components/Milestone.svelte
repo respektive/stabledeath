@@ -17,6 +17,7 @@
         border-radius: 20px;
         padding: 5px;
         overflow: hidden;
+        max-width: 350px;
     }
     .date {
         color: light-dark(#908caa, black);

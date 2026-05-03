@@ -24,10 +24,11 @@
     .container {
         display: flex;
         flex-direction: column;
-        gap: .25rem;
+        gap: 0.25rem;
         width: 100%;
+        max-width: 700px;
         height: 50px;
-        margin: 20px;
+        margin: 20px auto;
     }
 
     .subscripts {
@@ -35,7 +36,7 @@
         flex-direction: row;
         justify-content: space-between;
         font-size: 0.9rem;
-        padding: 0 .5rem;
+        padding: 0 0.5rem;
     }
 
     .bar-container {
@@ -58,7 +59,7 @@
     }
 
     .stable-bar::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         right: calc(var(--slant) * -2);

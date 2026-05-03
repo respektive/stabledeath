@@ -185,13 +185,13 @@ export async function getLazerPeakNearTopPercentage(): Promise<ChangelogData> {
 }
 
 type UserGraph = {
-    timestamp: number[];
+    timestamps: number[];
     stable: number[];
     lazer: number[];
 };
 
 type RatioGraph = {
-    timestamp: number[];
+    timestamps: number[];
     ratio: number[];
 };
 
@@ -235,13 +235,13 @@ async function updateUserCountGraph() {
 
     latestUserGraph = rows.reduce(
         (acc, d) => {
-            acc.timestamp.push(d.timestamp / 1000);
+            acc.timestamps.push(d.timestamp / 1000);
             acc.stable.push(d.stable);
             acc.lazer.push(d.lazer);
             return acc;
         },
         {
-            timestamp: [] as number[],
+            timestamps: [] as number[],
             stable: [] as number[],
             lazer: [] as number[],
         },
@@ -290,11 +290,11 @@ export async function updateUserRatioGraph() {
       ORDER BY b.timestamp`);
     latestRatioGraph = rows.reduce(
         (acc, d) => {
-            acc.timestamp.push(d.timestamp / 1000);
+            acc.timestamps.push(d.timestamp / 1000);
             acc.ratio.push(d.ratio * 100);
             return acc;
         },
-        { timestamp: [] as number[], ratio: [] as number[] },
+        { timestamps: [] as number[], ratio: [] as number[] },
     );
 }
 
@@ -320,13 +320,13 @@ async function updateLastDay() {
         .reverse()
         .reduce(
             (acc, d) => {
-                acc.timestamp.push(d.timestamp / 1000);
+                acc.timestamps.push(d.timestamp / 1000);
                 acc.stable.push(d.stable ?? 0);
                 acc.lazer.push(d.lazer ?? 0);
                 return acc;
             },
             {
-                timestamp: [] as number[],
+                timestamps: [] as number[],
                 stable: [] as number[],
                 lazer: [] as number[],
             },
@@ -354,14 +354,14 @@ async function updateLastDayRatio() {
         .reverse()
         .reduce(
             (acc, d) => {
-                acc.timestamp.push(d.timestamp / 1000);
+                acc.timestamps.push(d.timestamp / 1000);
                 acc.ratio.push(
                     ((d.lazer ?? 0) / ((d.lazer ?? 0) + (d.stable ?? 0))) * 100,
                 );
                 return acc;
             },
             {
-                timestamp: [] as number[],
+                timestamps: [] as number[],
                 ratio: [] as number[],
             },
         );

@@ -4,14 +4,16 @@ import type { NonZeroNumber } from "$utils/types";
 import { getDb } from "./stats.server";
 let latestCheck: NonZeroNumber;
 
+const AUTOUPDATE_TIMEOUT = 1000 * 60 * 24;
+
 export type DailyEntry = {
-    date: number[];
+    timestamps: number[];
     stable: number[];
     lazer: number[];
 };
 
 export type DailyRatio = {
-    date: number[];
+    timestamps: number[];
     ratio: number[];
 };
 let latestHistoricAbsolute: DailyEntry;
@@ -22,13 +24,13 @@ export async function getHistoricData(): Promise<DailyEntry> {
 
     let values = (await db.select().from(dailyTable)).reduce(
         (init, value) => {
-            init.date.push(value.date);
+            init.timestamps.push(value.date);
             init.stable.push(value.stable);
             init.lazer.push(value.lazer);
             return init;
         },
         {
-            date: [] as number[],
+            timestamps: [] as number[],
             stable: [] as number[],
             lazer: [] as number[],
         },
@@ -41,12 +43,12 @@ export async function getHistoricData(): Promise<DailyEntry> {
 export async function getHistoricRatio(): Promise<DailyRatio> {
     let values = (await getDb().select().from(dailyTable)).reduce(
         (init, value) => {
-            init.date.push(value.date);
+            init.timestamps.push(value.date);
             init.ratio.push(ratio(value.stable, value.lazer) * 100.0);
             return init;
         },
         {
-            date: [] as number[],
+            timestamps: [] as number[],
             ratio: [] as number[],
         },
     );

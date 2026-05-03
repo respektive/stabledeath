@@ -8,6 +8,7 @@
     import { onMount } from "svelte";
     import RatioGraph from "$components/RatioGraph.svelte";
     import ComparisonGraph from "$components/ComparisonGraph.svelte";
+    import GraphSet from "$components/GraphSet.svelte";
 
     let { data } = $props();
 
@@ -103,43 +104,32 @@
         </div>
         <MilestoneList />
         <h2>Graphs</h2>
-        <ComparisonGraph
-            timestamps={userCountData.timestamp}
-            stable={userCountData.stable}
-            lazer={userCountData.lazer}
-            name="user counts"
-        />
-        <RatioGraph
-            values={userRatioData.ratio}
-            timestamps={userRatioData.timestamp}
-            name="lazer user ratio"
-        />
-        <ComparisonGraph
-            timestamps={dayUserCountData.timestamp}
-            stable={dayUserCountData.stable}
-            lazer={dayUserCountData.lazer}
-            name="user count for last 24h"
-        />
-        <RatioGraph
-            values={dayUserRatioData.ratio}
-            timestamps={dayUserRatioData.timestamp}
-            name="lazer user ratio for last 24h"
-        />
+        <div class="graphs">
+            <GraphSet
+                comparison={userCountData}
+                comparison_name="user counts"
+                ratio={userRatioData}
+                ratio_name="lazer user ratio"
+            />
+            <GraphSet
+                comparison={dayUserCountData}
+                comparison_name="user count for past 24h"
+                ratio={dayUserRatioData}
+                ratio_name="lazer user ratio for past 24h"
+            />
 
-        <h2>Historic usage data extracted from Internet Archive snapshots</h2>
-        <h4>Please remember that it might be slightly inaccurate</h4>
+            <h2>
+                Historic usage data extracted from Internet Archive snapshots
+            </h2>
+            <h4>Please remember that it might be slightly inaccurate</h4>
 
-        <ComparisonGraph
-            timestamps={historicCount.date}
-            stable={historicCount.stable}
-            lazer={historicCount.lazer}
-            name="Historic user counts (daily averages)"
-        />
-        <RatioGraph
-            timestamps={historicRatio.date}
-            values={historicRatio.ratio}
-            name="Historic lazer% (daily averages)"
-        />
+            <GraphSet
+                comparison={historicCount}
+                comparison_name="Historic user counts"
+                ratio={historicRatio}
+                ratio_name="Historic lazer%"
+            />
+        </div>
         <Footer />
     </div>
 </div>
@@ -185,7 +175,6 @@
 
     .contents {
         width: 100vw;
-        max-width: 700px;
         padding: 10px;
     }
 
@@ -199,6 +188,29 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 700px;
+        margin: auto;
+    }
+    .graphs {
+        text-align: center;
+    }
+
+    @media (max-width: 1599px) {
+        .contents {
+            max-width: 700px;
+        }
+        .graphs {
+            width: 100%;
+        }
+    }
+
+    @media (min-width: 1600px) {
+        .contents {
+            max-width: 1400px;
+        }
+        .graphs {
+            width: 1400px;
+        }
     }
 
     @media (prefers-color-scheme: light) {

@@ -7,7 +7,7 @@
         { date: 1740430800000, milestone: "Beatmap submission" },
         { date: 1747170000000, milestone: "Satori GC" },
         { date: 1749070800000, milestone: "Song select v2" },
-        { date: 1761685200000, milestone: "WASAPI" },
+        { date: 1761685200000, milestone: "WASAPI improvements" },
         { date: 1776459600000, milestone: "Ranked play" },
     ];
 
@@ -31,19 +31,6 @@
             >
             <Milestone row={i + 1} date={null}>{tba[i]}</Milestone>
         {/each}
-        <!-- <Milestone date={1706562000000}>pp release</Milestone>
-        <Milestone date={1721854800000}>Daily challenges</Milestone>
-        <Milestone date={1740430800000}>Beatmap submission</Milestone>
-        <Milestone date={1747170000000}>Satori GC</Milestone>
-        <Milestone date={1749070800000}>Song select v2</Milestone>
-        <Milestone date={1761685200000}>WASAPI</Milestone>
-        <Milestone date={1776459600000}>Ranked play</Milestone>
-        <Milestone date={null}>Real-time diffcalc</Milestone>
-        <Milestone date={null}>Results screen v2</Milestone>
-        <Milestone date={null}>New score multipliers</Milestone>
-        <Milestone date={null}>OWC on lazer</Milestone>
-        <Milestone date={null}>Majority on lazer</Milestone>
-        <Milestone date={null}>App store release</Milestone> -->
     </div>
 </div>
 
@@ -53,5 +40,7 @@
         grid-template-columns: 1fr 1fr;
         column-gap: 1rem;
         row-gap: 1rem;
+        max-width: 700px;
+        margin: auto;
     }
 </style>

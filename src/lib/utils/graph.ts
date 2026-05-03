@@ -72,8 +72,8 @@ export function makeUserCountOptions(
         },
         series: [
             {},
-            { label: "stable", stroke: "#66ccff", width: 2 },
-            { label: "lazer", stroke: "#ff66aa", width: 2 },
+            { label: "stable", stroke: "#66ccff", width: 2, spanGaps: false },
+            { label: "lazer", stroke: "#ff66aa", width: 2, spanGaps: false },
         ],
         axes: [
             {
