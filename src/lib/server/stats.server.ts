@@ -49,11 +49,12 @@ export let latestCheck: NonZeroNumber = now();
 export const getLatestCheck = () => latestCheck;
 
 setInterval(async () => {
-    if (!latestData || latestCheck < now() - 300) {
-        log("Triggered an update");
+    log(`Checking for staleness, ${now() - latestCheck}s until stale`);
+    if (isChangelogStale()) {
+        log("Stale check, updating");
         latestCheck = now();
         log("Current timestamp is ", latestCheck);
-        latestData = await getChangelogDataApi(latestCheck);
+        latestData = (await getChangelogDataApi(latestCheck)) ?? latestData;
         log("Fetched osu!api data", latestData);
         await Promise.all([
             updateLastDay(),
@@ -62,8 +63,7 @@ setInterval(async () => {
         ]);
         log("Updated graph data");
     }
-    log("Automatic update");
-}, 150000);
+}, 50 * 1000);
 
 type ChangelogData = {
     timestamp: number;
@@ -71,8 +71,12 @@ type ChangelogData = {
     lazer: number;
 };
 
+function isChangelogStale() {
+    return latestCheck < now() - 150;
+}
+
 export async function getChangelogData() {
-    if (latestData && latestCheck > now() - 300) {
+    if (latestData && !isChangelogStale()) {
         log(
             `Updated recently ${new Date(latestCheck * 1000)}, returning latest`,
         );
@@ -103,6 +107,7 @@ export async function getChangelogDataApi(timestamp: NonZeroNumber): Promise<{
     lazer: number;
 } | null> {
     let changelogs: ChangelogEntry[] = [];
+    latestCheck = now();
     try {
         const client = await getApiClient();
         if (client === null) {
