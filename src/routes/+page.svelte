@@ -8,6 +8,7 @@
     import RatioEstimate from "$components/RatioEstimate.svelte";
     import { date } from "$utils/types.js";
     import SelfAnchor from "$components/SelfAnchor.svelte";
+    import favicon from "../assets/favicon.ico";
 
     let { data } = $props();
 
@@ -49,6 +50,7 @@
 </script>
 
 <svelte:head>
+    <link rel="icon" href={favicon} />
     <meta
         property="og:title"
         content="arewelazeryet - osu!lazer user share tracker"
