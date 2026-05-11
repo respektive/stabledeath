@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/private";
 
-const Url = env._URL ?? "http://127.0.0.1:6727";
+const Url = env._URL ?? "http://127.0.0.1:6726";
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 
