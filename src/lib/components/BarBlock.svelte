@@ -1,11 +1,16 @@
 <script lang="ts">
     import Bars from "./Bars.svelte";
+    import SelfAnchor from "./SelfAnchor.svelte";
 
-    let { lazer, stable, children } = $props();
+    let { lazer, stable, anchor, children } = $props();
 </script>
 
 <div class="bar">
-    <h3>{@render children()}</h3>
+    <SelfAnchor {anchor}>
+        <h3>
+            {@render children()}
+        </h3>
+    </SelfAnchor>
     <Bars {stable} {lazer} />
 </div>
 

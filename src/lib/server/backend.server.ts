@@ -24,6 +24,12 @@ export type PointLineResponse = {
     ratio: number[];
 };
 
+export type RegressionResult = {
+    target_ratio: number;
+    was_reached: boolean;
+    estimated_timestamp: number;
+};
+
 type LoadFetch = typeof fetch;
 
 type CacheEntry<T> = {
@@ -149,6 +155,15 @@ export async function getHistoryGraph(fetch: LoadFetch) {
     return cached("graphs:history", 60 * MINUTE, async () =>
         normalizePointLine(
             await getJson<PointLineResponse>(fetch, "/api/graphs/history"),
+        ),
+    );
+}
+
+export async function getRatioEstimate(fetch: LoadFetch, percentage: number) {
+    return cached(`graphs:ratio_estimate:${percentage}`, 5 * MINUTE, async () =>
+        getJson<RegressionResult>(
+            fetch,
+            `/api/graphs/ratio_estimate/${percentage}`,
         ),
     );
 }

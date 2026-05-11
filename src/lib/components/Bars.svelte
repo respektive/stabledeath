@@ -12,14 +12,14 @@
 
 <div class="container">
     <div class="bar-container">
-        <div class="stable-bar" style="--stable: {stable_percentage}%"></div>
+        <div class="lazer-bar" style="--lazer: {lazer_percentage}%"></div>
     </div>
     <div class="subscripts">
-        <div id="stable">
-            stable: {stable} ({stable_percentage}%)
-        </div>
         <div id="lazer">
             lazer: {lazer} ({lazer_percentage}%)
+        </div>
+        <div id="stable">
+            stable: {stable} ({stable_percentage}%)
         </div>
     </div>
 </div>
@@ -48,21 +48,21 @@
         height: 20px;
         border-radius: 10px;
 
-        background-color: #ff66aa;
+        background-color: #66ccff;
 
         overflow: hidden;
     }
 
-    .stable-bar {
+    .lazer-bar {
         --slant: 3px;
         position: relative;
-        width: calc(var(--stable) - var(--slant));
+        width: calc(var(--lazer) - var(--slant));
         height: 100%;
 
-        background-color: #66ccff;
+        background-color: #ff66aa;
     }
 
-    .stable-bar::after {
+    .lazer-bar::after {
         content: "";
         position: absolute;
         top: 0;
@@ -70,6 +70,6 @@
         width: calc(var(--slant) * 2);
         height: 100%;
         clip-path: polygon(0 0, 0% 100%, 100% 0);
-        background-color: #66ccff;
+        background-color: #ff66aa;
     }
 </style>

@@ -18,3 +18,9 @@ export function date(timestamp: number): string {
         timeZone: "UTC",
     });
 }
+
+export function dateOnly(timestamp: number): string {
+    return new Date(timestamp * 1000).toLocaleDateString("en-UK", {
+        timeZone: "UTC",
+    });
+}

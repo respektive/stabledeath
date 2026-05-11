@@ -5,7 +5,9 @@
     import MilestoneList from "$components/MilestoneList.svelte";
     import { onMount } from "svelte";
     import GraphSet from "$components/GraphSet.svelte";
+    import RatioEstimate from "$components/RatioEstimate.svelte";
     import { date } from "$utils/types.js";
+    import SelfAnchor from "$components/SelfAnchor.svelte";
 
     let { data } = $props();
 
@@ -63,25 +65,45 @@
         <h2 style="margin-top: 0">{areWeYet()}</h2>
         <div class="bars">
             {#if changelogs}
-                <BarBlock stable={changelogs.stable} lazer={changelogs.lazer}>
+                <BarBlock
+                    anchor="current"
+                    stable={changelogs.stable}
+                    lazer={changelogs.lazer}
+                >
                     current (as of {date(changelogs.timestamp)})
                 </BarBlock>
             {/if}
             {#if peak}
-                <BarBlock stable={peak.stable} lazer={peak.lazer}>
+                <BarBlock
+                    anchor="peak_user"
+                    stable={peak.stable}
+                    lazer={peak.lazer}
+                >
                     Highest lazer user count ({date(peak.timestamp)})
                 </BarBlock>
-                <BarBlock stable={peakRel.stable} lazer={peakRel.lazer}>
+                <BarBlock
+                    anchor="peak_ratio"
+                    stable={peakRel.stable}
+                    lazer={peakRel.lazer}
+                >
                     Highest lazer ratio ({date(peakRel.timestamp)})
                 </BarBlock>
-                <BarBlock stable={nearPeak.stable} lazer={nearPeak.lazer}>
-                    Highest ratio near peak usage ({date(nearPeak.timestamp)})
+                <BarBlock
+                    anchor="percentile"
+                    stable={nearPeak.stable}
+                    lazer={nearPeak.lazer}
+                >
+                    Highest usage while near peak ratio ({date(
+                        nearPeak.timestamp,
+                    )})
                 </BarBlock>
             {/if}
         </div>
-        <MilestoneList />
-        <h2>24 hour data</h2>
+        <RatioEstimate />
         <div class="graphs">
+            <SelfAnchor anchor="24h">
+                <h2>24 hour data</h2>
+            </SelfAnchor>
             <GraphSet
                 comparison={userCountData}
                 comparison_name="user counts"
@@ -89,7 +111,9 @@
                 ratio_name="lazer user ratio"
             />
 
-            <h2>Historic usage data</h2>
+            <SelfAnchor anchor="history">
+                <h2>Historic data</h2>
+            </SelfAnchor>
             <GraphSet
                 comparison={historicCount}
                 comparison_name="Historic user counts"
@@ -97,6 +121,7 @@
                 ratio_name="Historic lazer%"
             />
         </div>
+        <MilestoneList />
         <Footer />
     </div>
 </div>
