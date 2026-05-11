@@ -1,50 +1,15 @@
-// src/routes/+page.server.ts
-import { getHistoricRatio, getHistoricData } from "$lib/server/daily.server.ts";
 import {
-    getChangelogData,
-    getLazerAbsolutePeak,
-    getLazerPeakNearTopPercentage,
-    getLazerRelativePeak,
-    getUserCountGraph,
-    getUserRatioGraph,
-} from "../lib/server/stats.server.ts";
-import { getLastDay, getLastDayRatio } from "$lib/server/last_day.server.ts";
+    getHomeView,
+    VIEW_CACHE_CONTROL,
+    VIEW_DEPENDENCY,
+} from "$lib/server/backend.server";
+import type { PageServerLoad } from "./$types";
 
-export const load = async () => {
-    const [
-        changelogs,
-        peak,
-        peakRel,
-        nearPeak,
-        userCountData,
-        userRatioData,
-        dayUserCountData,
-        dayUserRatioData,
-        historicUserCount,
-        historicUserRatio,
-    ] = await Promise.all([
-        getChangelogData(),
-        getLazerAbsolutePeak(),
-        getLazerRelativePeak(),
-        getLazerPeakNearTopPercentage(),
-        getUserCountGraph(),
-        getUserRatioGraph(),
-        getLastDay(),
-        getLastDayRatio(),
-        getHistoricData(),
-        getHistoricRatio(),
-    ]);
+export const load: PageServerLoad = async ({ depends, fetch, setHeaders }) => {
+    depends(VIEW_DEPENDENCY);
+    setHeaders({
+        "cache-control": VIEW_CACHE_CONTROL,
+    });
 
-    return {
-        changelogs,
-        peak,
-        peakRel,
-        nearPeak,
-        userCountData,
-        userRatioData,
-        dayUserCountData,
-        dayUserRatioData,
-        historicUserCount,
-        historicUserRatio,
-    };
+    return getHomeView(fetch);
 };

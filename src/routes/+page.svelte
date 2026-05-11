@@ -1,13 +1,9 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { invalidate } from "$app/navigation";
     import BarBlock from "$components/BarBlock.svelte";
-    import Bars from "$components/Bars.svelte";
     import Footer from "$components/Footer.svelte";
-    import Milestone from "$components/Milestone.svelte";
     import MilestoneList from "$components/MilestoneList.svelte";
     import { onMount } from "svelte";
-    import RatioGraph from "$components/RatioGraph.svelte";
-    import ComparisonGraph from "$components/ComparisonGraph.svelte";
     import GraphSet from "$components/GraphSet.svelte";
     import { date } from "$utils/types.js";
 
@@ -18,29 +14,19 @@
     const peakRel = $derived(data.peakRel);
     const nearPeak = $derived(data.nearPeak);
     const userCountData = $derived(data.userCountData);
-    const userRatioData = $derived(data.userRatioData);
-    const dayUserCountData = $derived(data.dayUserCountData);
-    const dayUserRatioData = $derived(data.dayUserRatioData);
 
     const historicCount = $derived(data.historicUserCount);
-    const historicRatio = $derived(data.historicUserRatio);
 
     onMount(() => {
         const interval = setInterval(() => {
-            invalidateAll();
-        }, 150000);
+            invalidate("app:home-view");
+        }, 300000);
 
         return () => {
             clearInterval(interval);
         };
     });
-    const ratio = $derived(
-        Math.round(
-            ((changelogs?.lazer ?? 0) /
-                ((changelogs?.stable ?? 0) + (changelogs?.lazer ?? 0))) *
-                10000,
-        ) / 100,
-    );
+    const ratio = $derived(Math.round((changelogs?.ratio ?? 0) * 10000) / 100);
 
     const areWeYet = () => {
         if (ratio < 50.0) {
@@ -80,48 +66,34 @@
                 <BarBlock stable={changelogs.stable} lazer={changelogs.lazer}>
                     current (as of {date(changelogs.timestamp)})
                 </BarBlock>
-            {:else}
-                <div>uhhh</div>
             {/if}
             {#if peak}
                 <BarBlock stable={peak.stable} lazer={peak.lazer}>
-                    lazer user count peak (at {date(peak.timestamp)})
+                    Highest lazer user count ({date(peak.timestamp)})
                 </BarBlock>
                 <BarBlock stable={peakRel.stable} lazer={peakRel.lazer}>
-                    lazer user percentage peak (at {date(peakRel.timestamp)})
+                    Highest lazer ratio ({date(peakRel.timestamp)})
                 </BarBlock>
                 <BarBlock stable={nearPeak.stable} lazer={nearPeak.lazer}>
-                    lazer user count peak near highest percentage (at {date(
-                        nearPeak.timestamp,
-                    )})
+                    Highest ratio near peak usage ({date(nearPeak.timestamp)})
                 </BarBlock>
             {/if}
         </div>
         <MilestoneList />
-        <h2>Graphs</h2>
+        <h2>24 hour data</h2>
         <div class="graphs">
             <GraphSet
                 comparison={userCountData}
                 comparison_name="user counts"
-                ratio={userRatioData}
+                ratio={userCountData}
                 ratio_name="lazer user ratio"
             />
-            <GraphSet
-                comparison={dayUserCountData}
-                comparison_name="user count for past 24h"
-                ratio={dayUserRatioData}
-                ratio_name="lazer user ratio for past 24h"
-            />
 
-            <h2>
-                Historic usage data extracted from Internet Archive snapshots
-            </h2>
-            <h4>Please remember that it might be slightly inaccurate</h4>
-
+            <h2>Historic usage data</h2>
             <GraphSet
                 comparison={historicCount}
                 comparison_name="Historic user counts"
-                ratio={historicRatio}
+                ratio={historicCount}
                 ratio_name="Historic lazer%"
             />
         </div>
@@ -179,13 +151,6 @@
         align-items: stretch;
     }
 
-    .bar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 700px;
-        margin: auto;
-    }
     .graphs {
         text-align: center;
     }

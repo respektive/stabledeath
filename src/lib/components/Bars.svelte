@@ -1,9 +1,13 @@
 <script lang="ts">
     const { stable, lazer }: { stable: number; lazer: number } = $props();
-    const stable_percentage =
-        Math.round((stable / (stable + lazer)) * 10000.0) / 100;
-    const lazer_percentage =
-        Math.round((100.0 - stable_percentage) * 100) / 100;
+    const stable_percentage = $derived(
+        stable + lazer > 0
+            ? Math.round((stable / (stable + lazer)) * 10000.0) / 100
+            : 0,
+    );
+    const lazer_percentage = $derived(
+        Math.round((100.0 - stable_percentage) * 100) / 100,
+    );
 </script>
 
 <div class="container">

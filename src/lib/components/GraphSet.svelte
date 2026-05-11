@@ -9,27 +9,27 @@
         ratio_name,
     }: {
         comparison: {
-            timestamps: number[];
+            timestamp: number[];
             stable: number[];
             lazer: number[];
             sum: number[];
         };
         comparison_name: string;
-        ratio: { timestamps: number[]; ratio: number[] };
+        ratio: { timestamp: number[]; ratio: number[] };
         ratio_name: string;
     } = $props();
 </script>
 
 <div class="graph-box">
     <ComparisonGraph
-        timestamps={comparison.timestamps}
+        timestamps={comparison.timestamp}
         stable={comparison.stable}
         lazer={comparison.lazer}
         sum={comparison.sum}
         name={comparison_name}
     />
     <RatioGraph
-        timestamps={ratio.timestamps}
+        timestamps={ratio.timestamp}
         values={ratio.ratio}
         name={ratio_name}
     />

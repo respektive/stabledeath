@@ -11,10 +11,6 @@
     "start": "bun ./build/index.js"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.0",
-    "drizzle-kit": "^0.31.8",
-    "drizzle-orm": "^0.45.1",
-    "osu-api-v2-js": "^3.0.0",
     "uplot": "^1.6.32",
     "uplot-svelte": "^1.2.4"
   },

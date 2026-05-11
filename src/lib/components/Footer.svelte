@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import FooterLink from "./FooterLink.svelte";
     import { env } from "$env/dynamic/public";
 </script>
