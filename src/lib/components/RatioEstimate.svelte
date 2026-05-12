@@ -58,7 +58,7 @@
                     loading = false;
                 }
             }
-        }, 250);
+        }, 50);
 
         return () => {
             clearTimeout(timeout);
