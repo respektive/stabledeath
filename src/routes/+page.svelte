@@ -42,8 +42,7 @@
     };
 
     const opengraphHeader = () => {
-        const areWeYet =
-            ratio < 50.0 ? "we are not lazer yet" : "we are lazer now";
+        const areWeYet = ratio < 50.0 ? "we are not lazer yet" : "we are lazer now";
         const start = `Currently the percentage is ${ratio}%. ${areWeYet}`;
         return start;
     };
@@ -51,10 +50,7 @@
 
 <svelte:head>
     <link rel="icon" href={favicon} />
-    <meta
-        property="og:title"
-        content="arewelazeryet - osu!lazer user share tracker"
-    />
+    <meta property="og:title" content="arewelazeryet - osu!lazer user share tracker" />
     <meta property="og:type" content="website" />
     {#if changelogs}
         <meta property="og:description" content={opengraphHeader()} />
@@ -67,37 +63,19 @@
         <h2 style="margin-top: 0">{areWeYet()}</h2>
         <div class="bars">
             {#if changelogs}
-                <BarBlock
-                    anchor="current"
-                    stable={changelogs.stable}
-                    lazer={changelogs.lazer}
-                >
+                <BarBlock anchor="current" stable={changelogs.stable} lazer={changelogs.lazer}>
                     current (as of {date(changelogs.timestamp)})
                 </BarBlock>
             {/if}
             {#if peak}
-                <BarBlock
-                    anchor="peak_user"
-                    stable={peak.stable}
-                    lazer={peak.lazer}
-                >
+                <BarBlock anchor="peak_user" stable={peak.stable} lazer={peak.lazer}>
                     highest lazer user count ({date(peak.timestamp)})
                 </BarBlock>
-                <BarBlock
-                    anchor="peak_ratio"
-                    stable={peakRel.stable}
-                    lazer={peakRel.lazer}
-                >
+                <BarBlock anchor="peak_ratio" stable={peakRel.stable} lazer={peakRel.lazer}>
                     highest lazer ratio ({date(peakRel.timestamp)})
                 </BarBlock>
-                <BarBlock
-                    anchor="percentile"
-                    stable={nearPeak.stable}
-                    lazer={nearPeak.lazer}
-                >
-                    highest usage while near peak ratio ({date(
-                        nearPeak.timestamp,
-                    )})
+                <BarBlock anchor="percentile" stable={nearPeak.stable} lazer={nearPeak.lazer}>
+                    highest usage while near peak ratio ({date(nearPeak.timestamp)})
                 </BarBlock>
             {/if}
         </div>
@@ -111,6 +89,7 @@
                 comparison_name="user counts"
                 ratio={userCountData}
                 ratio_name="lazer user ratio"
+                is24h={true}
             />
 
             <SelfAnchor anchor="history">

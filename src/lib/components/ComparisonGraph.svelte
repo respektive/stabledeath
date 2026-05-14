@@ -1,9 +1,12 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
-    import { makeUserCountOptions } from "$lib/utils/graph.ts";
+    import { makeUserCountConfiguration } from "$lib/utils/graph.ts";
     import { queueRender } from "$utils/renderQueue";
-    import uPlot from "uplot";
-    import "uplot/dist/uPlot.min.css";
+
+    import type { Chart as ChartType } from "chart.js";
+    import "chartjs-adapter-temporal/register";
+
+    let Chart: typeof ChartType;
 
     let {
         timestamps,
@@ -11,34 +14,35 @@
         lazer,
         sum,
         name,
+        is24h,
     }: {
         timestamps: number[];
         stable: number[];
         lazer: number[];
         sum: number[];
         name: string;
+        is24h?: Boolean;
     } = $props();
 
-    let graphContainer: HTMLDivElement;
-    let graphPlot: uPlot | undefined;
+    let chartCanvas: HTMLCanvasElement;
+    let graphChart: ChartType | undefined;
     let resizeFrame: number | undefined;
     let lastWidth = 0;
     let mounted = false;
     let queuedRenderCancel: (() => void) | undefined;
 
-    const getData = (): uPlot.AlignedData => [timestamps, stable, lazer, sum];
-
     function createPlot() {
-        if (!mounted || graphPlot || !graphContainer?.isConnected) {
+        if (!mounted || graphChart || !chartCanvas?.isConnected) {
             return;
         }
 
-        lastWidth = graphContainer.clientWidth;
-        graphPlot = new uPlot(
-            makeUserCountOptions(lastWidth, name, name),
-            getData(),
-            graphContainer,
-        );
+        lastWidth = chartCanvas.clientWidth;
+
+        graphChart = new Chart(chartCanvas, makeUserCountConfiguration(timestamps, stable, lazer, sum, name, is24h));
+    }
+
+    function handleDoubleclick() {
+        graphChart?.resetZoom();
     }
 
     function recreatePlot() {
@@ -46,8 +50,8 @@
             return;
         }
 
-        graphPlot?.destroy();
-        graphPlot = undefined;
+        graphChart?.destroy();
+        graphChart = undefined;
         createPlot();
     }
 
@@ -59,17 +63,17 @@
         resizeFrame = requestAnimationFrame(() => {
             resizeFrame = undefined;
 
-            if (!graphPlot) {
+            if (!graphChart) {
                 return;
             }
 
-            const width = graphContainer.clientWidth;
+            const width = chartCanvas.clientWidth;
             if (width === 0 || width === lastWidth) {
                 return;
             }
 
             lastWidth = width;
-            graphPlot.setSize({ width, height: 400 });
+            graphChart.resize(width, 450);
         });
     }
 
@@ -79,43 +83,73 @@
     }
 
     $effect(() => {
-        if (graphPlot) {
-            graphPlot.setData(getData());
+        if (graphChart) {
+            graphChart.data.labels = timestamps;
+            graphChart.data.datasets[0].data = lazer;
+            graphChart.data.datasets[1].data = stable;
+            graphChart.data.datasets[2].data = sum;
+            graphChart.update();
         }
     });
 
     onMount(() => {
-        mounted = true;
+        let isCancelled = false;
 
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-        const onSchemeChange = () => queueRender(recreatePlot);
+        let mediaQuery: MediaQueryList | undefined;
+        let onSchemeChange: (() => void) | undefined;
+        let ro: ResizeObserver | undefined;
+        let io: IntersectionObserver | undefined;
 
-        mediaQuery.addEventListener("change", onSchemeChange);
+        // dynamically import the modules on the client. zoom plugin will not work with ssr for example
+        const initChart = async () => {
+            const { Chart: ChartModule, registerables } = await import("chart.js");
+            const annotationPlugin = (await import("chartjs-plugin-annotation")).default;
+            const zoomPlugin = (await import("chartjs-plugin-zoom")).default;
 
-        const ro = new ResizeObserver(queueResize);
+            if (isCancelled) return;
 
-        ro.observe(graphContainer);
+            Chart = ChartModule;
+            Chart.register(...registerables, annotationPlugin, zoomPlugin);
 
-        const io = new IntersectionObserver(
-            ([entry]) => {
-                if (!entry?.isIntersecting) {
-                    return;
-                }
+            mounted = true;
 
-                queueCreatePlot();
-                io.disconnect();
-            },
-            { rootMargin: "300px" },
-        );
+            mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+            onSchemeChange = () => queueRender(recreatePlot);
 
-        io.observe(graphContainer);
+            mediaQuery.addEventListener("change", onSchemeChange);
+
+            ro = new ResizeObserver(queueResize);
+
+            ro.observe(chartCanvas);
+
+            io = new IntersectionObserver(
+                ([entry]) => {
+                    if (!entry?.isIntersecting) {
+                        return;
+                    }
+
+                    queueCreatePlot();
+                    io?.disconnect();
+                },
+                { rootMargin: "300px" },
+            );
+
+            io.observe(chartCanvas);
+        };
+
+        initChart();
 
         return () => {
+            isCancelled = true;
             mounted = false;
             queuedRenderCancel?.();
-            mediaQuery.removeEventListener("change", onSchemeChange);
-            io.disconnect();
-            ro.disconnect();
+
+            if (mediaQuery && onSchemeChange) {
+                mediaQuery.removeEventListener("change", onSchemeChange);
+            }
+
+            io?.disconnect();
+            ro?.disconnect();
 
             if (resizeFrame != null) {
                 cancelAnimationFrame(resizeFrame);
@@ -124,23 +158,11 @@
     });
 
     onDestroy(() => {
-        graphPlot?.destroy();
-        graphPlot = undefined;
+        graphChart?.destroy();
+        graphChart = undefined;
     });
 </script>
 
-<div style="height: 500px; max-width: 700px; width: 100%">
-    <div bind:this={graphContainer} style="width: 100%"></div>
+<div style="height: 450px; max-width: 700px; width: 100%">
+    <canvas bind:this={chartCanvas} ondblclick={handleDoubleclick} style="width: 100%; height: 100%;"></canvas>
 </div>
-
-<style>
-    div :global(.u-legend) {
-        color: light-dark(black, "#e0def4");
-    }
-    div :global(.u-title) {
-        color: light-dark(black, "#e0def4");
-    }
-    div :global(.u-wrap) {
-        border: none;
-    }
-</style>

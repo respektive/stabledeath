@@ -7,6 +7,7 @@
         comparison_name,
         ratio,
         ratio_name,
+        is24h,
     }: {
         comparison: {
             timestamp: number[];
@@ -17,6 +18,7 @@
         comparison_name: string;
         ratio: { timestamp: number[]; ratio: number[] };
         ratio_name: string;
+        is24h?: Boolean;
     } = $props();
 </script>
 
@@ -27,12 +29,9 @@
         lazer={comparison.lazer}
         sum={comparison.sum}
         name={comparison_name}
+        {is24h}
     />
-    <RatioGraph
-        timestamps={ratio.timestamp}
-        values={ratio.ratio}
-        name={ratio_name}
-    />
+    <RatioGraph timestamps={ratio.timestamp} values={ratio.ratio} name={ratio_name} {is24h} />
 </div>
 
 <style>
