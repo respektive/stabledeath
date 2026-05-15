@@ -18,7 +18,7 @@
         comparison_name: string;
         ratio: { timestamp: number[]; ratio: number[] };
         ratio_name: string;
-        is24h?: Boolean;
+        is24h?: boolean;
     } = $props();
 </script>
 
@@ -31,7 +31,12 @@
         name={comparison_name}
         {is24h}
     />
-    <RatioGraph timestamps={ratio.timestamp} values={ratio.ratio} name={ratio_name} {is24h} />
+    <RatioGraph
+        timestamps={ratio.timestamp}
+        values={ratio.ratio}
+        name={ratio_name}
+        {is24h}
+    />
 </div>
 
 <style>
