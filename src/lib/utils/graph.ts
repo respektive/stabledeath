@@ -4,6 +4,7 @@ import type { AnnotationOptions } from "chartjs-plugin-annotation";
 const milestones = [
     { date: "2024-01-29", label: "pp release" },
     { date: "2024-07-24", label: "daily challenges" },
+    { date: "2024-10-09", label: "combo scaling removal" },
     { date: "2025-06-04", label: "song select v2" },
     { date: "2025-11-20", label: "updated download page" },
     { date: "2026-04-17", label: "ranked play" },
